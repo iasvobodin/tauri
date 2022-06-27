@@ -10,7 +10,62 @@ import { readDir, BaseDirectory, readBinaryFile } from '@tauri-apps/api/fs';
 import { Command } from '@tauri-apps/api/shell'
 
 
-new Command('npm_version', ['-v'])
+// const comm = new Command('exiftool', ['-ver'])
+
+// const comm2 = new Command('npm_version', '-v')
+
+// comm2.on('close', data => {
+//   console.log(`command finished with code ${data.code} and signal ${data.signal}`)
+// });
+// comm2.on('error', error => console.log(`command error: "${error}"`))
+// // console.log(comm, comm2, "comm")
+async function tryCommand2() {
+
+
+  const command = Command.sidecar('bin/exiftool', ['-ver'])
+  const output = await command.execute()
+
+  // const command2 = Command.sidecar('binaries/exiftool', ['-ver'])
+  // const command = new Command('binaries/exiftool', ['-ver']) // 
+  console.log('output', output);
+  command.on('close', data => console.log(data))
+  command.on('error', error => console.log(`command error: "${error}"`))
+  command.stdout.on('data', line => console.log(`command stdout: "${line}"`))
+  command.stderr.on('data', line => console.log(`command stderr: "${line}"`))
+
+  command.spawn()
+    .then(c => {
+      child = c
+      console.log(child);
+
+    })
+    .catch(e => console.log(e)
+    )
+}
+let child = null;
+// function onMessage(value:string) {
+//   responses.update(r => [{ text: `[${new Date().toLocaleTimeString()}]` + ': ' + (typeof value === "string" ? value : JSON.stringify(value)) }, ...r])
+// }
+function tryCommand(ttry: string) {
+  const command = new Command('exiftool-version', [ttry]) // 
+  console.log(command);
+  command.on('close', data => console.log(data))
+  command.on('error', error => console.log(`command error: "${error}"`))
+  command.stdout.on('data', line => console.log(`command stdout: "${line}"`))
+  command.stderr.on('data', line => console.log(`command stderr: "${line}"`))
+
+  command.spawn()
+    .then(c => {
+      child = c
+      console.log(child);
+
+    })
+    .catch(e => console.log(e)
+    )
+}
+
+
+
 const objectsURL = ref<Array<string>>([])
 
 async function selectFile() {
@@ -64,9 +119,11 @@ async function readDirectory() {
     console.log(selected, 'user selected a single directory')
     // user selected a single directory
     const entries = await readDir(selected);
-    console.log(entries, BaseDirectory);
+    // console.log(entries, BaseDirectory);
 
     entries.forEach(async (e) => {
+      console.log(e.path);
+      tryCommand(e.path)
       let data = await readBinaryFile(e.path);
       const blobb = new Blob([data]);
       objectsURL.value.push(URL.createObjectURL(blobb))
@@ -110,6 +167,8 @@ async function readDirectory() {
   <img alt="Vue logo" src="./assets/logo.png" />
   <HelloWorld msg="Hello Vue 3 + TypeScript + Vite" /><br>
   <button @click="readDirectory">OpenDirectory</button><br>
+  <button @click="tryCommand('-ver')">Command</button><br>
+  <button @click="tryCommand2">Command2</button><br>
   <button @click="selectFile">selectedFile</button>
   <img v-for="src in objectsURL" style="width: 200px; height: auto; " :src="src" alt="">
 </template>

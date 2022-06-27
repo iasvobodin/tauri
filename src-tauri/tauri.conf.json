@@ -20,11 +20,13 @@
         "open": true,
         "scope": [
           {
-            "name": "npm_version",
-            "cmd": "npm",
-            "args": [
-              "-v"
-            ]
+            "name": "exiftool-version",
+            "cmd": "exiftool",
+            "args": true
+          },
+          {
+            "name": "bin/exiftool",
+            "sidecar": true
           }
         ]
       },
@@ -41,7 +43,9 @@
       "deb": {
         "depends": []
       },
-      "externalBin": [],
+      "externalBin": [
+        "bin/exiftool"
+      ],
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
