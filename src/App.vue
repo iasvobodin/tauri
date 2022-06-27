@@ -6,7 +6,7 @@ import HelloWorld from './components/HelloWorld.vue'
 import { open } from '@tauri-apps/api/dialog';
 import { message } from '@tauri-apps/api/dialog';
 import { appDir } from '@tauri-apps/api/path';
-import { readDir, BaseDirectory, readBinaryFile } from '@tauri-apps/api/fs';
+import { writeTextFile, readDir, BaseDirectory, readBinaryFile } from '@tauri-apps/api/fs';
 import { Command } from '@tauri-apps/api/shell'
 
 
@@ -122,6 +122,7 @@ async function readDirectory() {
     // console.log(entries, BaseDirectory);
 
     entries.forEach(async (e) => {
+      await writeTextFile(`${selected}/a.txt`, e.path);
       console.log(e.path);
       tryCommand(e.path)
       let data = await readBinaryFile(e.path);
