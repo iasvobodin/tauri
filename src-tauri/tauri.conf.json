@@ -1,5 +1,4 @@
 {
-  "$schema": "..\\node_modules/@tauri-apps/cli\\schema.json",
   "build": {
     "beforeBuildCommand": "npm run build",
     "beforeDevCommand": "npm run dev",
@@ -20,13 +19,9 @@
         "open": true,
         "scope": [
           {
-            "name": "exiftool-version",
-            "cmd": "exiftool",
-            "args": true
-          },
-          {
             "name": "bin/exiftool",
-            "sidecar": true
+            "sidecar": true,
+            "args": true
           }
         ]
       },

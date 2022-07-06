@@ -19,7 +19,8 @@ BEGIN {
     my $exePath = @ARGV && lc($ARGV[0]) eq '-xpath' && shift() ? $^X : $0;
     # get exe directory
     my $exeDir = ($exePath =~ /(.*)[\\\/]/) ? $1 : '.';
-    my $incDir = ($0 =~ /(.*)[\\\/]/) ? "$1./Resources/lib" : '../Resources/lib';
+    # my $incDir = ($0 =~ /(.*)[\\\/]/) ? "$1./Resources/lib" : '../Resources/lib';
+      my $incDir = ($0 =~ /(.*)[\\\/]/) ? "$1/lib" : './lib';
     if (-l $0) {
         my $lnk = eval { readlink $0 };
         if (defined $lnk) {
