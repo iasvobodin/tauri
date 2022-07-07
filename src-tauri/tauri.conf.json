@@ -20,7 +20,13 @@
         "scope": [
           {
             "name": "bin/exiftool",
+            "cmd": "exiftool",
             "sidecar": true,
+            "args": true
+          },
+          {
+            "name": "exiftoolver",
+            "cmd": "exiftool",
             "args": true
           }
         ]

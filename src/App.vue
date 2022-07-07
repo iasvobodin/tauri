@@ -8,7 +8,7 @@ import { message } from '@tauri-apps/api/dialog';
 import { appDir } from '@tauri-apps/api/path';
 import { writeTextFile, readDir, BaseDirectory, readBinaryFile } from '@tauri-apps/api/fs';
 import { Command } from '@tauri-apps/api/shell'
-
+const debu = ref<Array<string>>([])
 
 // const comm = new Command('exiftool', ['-ver'])
 
@@ -25,20 +25,21 @@ async function tryCommand2(arg: string[]) {
   const command = Command.sidecar('bin/exiftool', arg)
   const output = await command.execute()
 
-  console.log('output', output.stdout);
-  // command.on('close', data => console.log(data))
-  // command.on('error', error => console.log(`command error: "${error}"`))
-  // command.stdout.on('data', line => console.log(`command stdout: "${line}"`))
-  // command.stderr.on('data', line => console.log(`command stderr: "${line}"`))
+  console.log('output', command, output.stdout);
+  command.on('close', data => console.log(data))
+  command.on('error', error => console.log(`command error: "${error}"`))
+  command.stdout.on('data', line => debu.value.push(line))
+  command.stderr.on('data', line => debu.value.push(line))
 
-  // command.spawn()
-  //   .then(c => {
-  //     child = c
-  //     console.log(child);
+  command.spawn()
+    .then(c => {
+      child = c
+      console.log(child);
 
-  //   })
-  //   .catch(e => console.log(e)
-  //   )
+    })
+    .catch(e => console.log(e)
+    )
+  debu.value.push(output.stdout)
   return output.stdout
 }
 let child = null;
@@ -46,7 +47,7 @@ let child = null;
 //   responses.update(r => [{ text: `[${new Date().toLocaleTimeString()}]` + ': ' + (typeof value === "string" ? value : JSON.stringify(value)) }, ...r])
 // }
 function tryCommand(ttry: string) {
-  const command = new Command('exiftool-version', [ttry]) // 
+  const command = new Command('exiftoolver', [ttry]) // 
   // console.log(command);
   command.on('close', data => console.log(data))
   command.on('error', error => console.log(`command error: "${error}"`))
@@ -120,16 +121,16 @@ async function readDirectory() {
     // user selected a single directory
     // -json "c:\Users\Phil\Images" > "c:\Users\Phil\test.json"
     const jjson = await tryCommand2(["-json", "-Rating", "-FileSize", "-FileName", selected])
-    // await writeTextFile(`${selected}/a.json`, jjson);
+    await writeTextFile(`${selected}/a.json`, jjson);
     const entries = await readDir(selected);
     // console.log(entries, BaseDirectory);
 
     entries.forEach(async (e) => {
       // await writeTextFile(`${selected}/a.txt`, e.path);
       console.log(e.path);
-      // tryCommand2(["-b", "-JpgFromRaw", `${e.path}`])
-      tryCommand2(["-jpgfromraw", "-b", "-ext", "nef", "-w", "jpeg", `${e.path}`])
-      tryCommand2(["-tagsfromfile", `${e.path}`, " -ext", "jpeg"])
+      tryCommand2(["-Rating", "-FileName", `${e.path}`])
+      // tryCommand2(["-jpgfromraw", "-b", "-ext", "nef", "-w", "jpeg", `${e.path}`])
+      // tryCommand2(["-tagsfromfile", `${e.path}`, " -ext", "jpeg"])
 
       // let data = await readBinaryFile(e.path);
       // const blobb = new Blob([data]);
@@ -172,12 +173,13 @@ async function readDirectory() {
 
 <template>
   <!-- <img alt="Vue logo" src="./assets/logo.png" /> -->
-  <HelloWorld msg="Photo rayting" /><br>
+  <HelloWorld msg="Photo rating" /><br>
   <button @click="readDirectory">OpenDirectory</button><br>
-  <!-- <button @click="tryCommand('-ver')">Command</button><br> -->
-  <button @click="tryCommand2('-ver')">Command2</button><br>
+  <button @click="tryCommand('-ver')">Command</button><br>
+  <button @click="tryCommand2(['-ver'])">Command2</button><br>
   <button @click="selectFile">selectedFile</button>
   <img v-for="src in objectsURL" style="width: 200px; height: auto; " :src="src" alt="">
+  <p>{{ debu }}</p>
 </template>
 
 <style>
